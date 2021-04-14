@@ -1,5 +1,8 @@
 package com.upgrad.blog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,6 +17,7 @@ public class Post {
     private String body;
     private Date date;
     @ManyToOne(fetch=FetchType.LAZY)
+    @JsonIgnore
     private User user;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Category> categories= new ArrayList<Category>();

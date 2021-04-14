@@ -1,5 +1,9 @@
 package com.upgrad.blog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,7 @@ public class User {
     private UserProfile profile;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonIgnoreProperties(value = "user", allowSetters = true)
     private List<Post> post= new ArrayList<Post>();
 
 
