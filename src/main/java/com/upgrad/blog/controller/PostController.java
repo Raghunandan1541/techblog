@@ -1,11 +1,18 @@
 package com.upgrad.blog.controller;
 
+import com.upgrad.blog.model.Category;
 import com.upgrad.blog.model.Post;
+import com.upgrad.blog.model.User;
 import com.upgrad.blog.service.PostService;
+import com.upgrad.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +20,9 @@ import java.util.List;
 public class PostController {
     @Autowired
     private PostService postService;
-
+    @Autowired
+    private UserService userService;
+//userService.getCurrentLoggedINUser()
     /*
     /posts      - get
     /posts/id   - get
@@ -26,8 +35,10 @@ public class PostController {
     //hasAnyRole also can be used here instead of hasRole
     @PreAuthorize("hasRole('ADMIN')")
     @RequestMapping("/posts")   //localhsot:8080/posts - get (response is json)
-    public List<Post> getAllPosts(){
-        return this.postService.getAllPosts();
+    public List<Post> getUserPost(){
+        User user = userService.getCurrentLoggedINUser();
+        List<Post> posts= user.getPost();
+        return posts;
     }
     @RequestMapping("/getpostbyid/{id}")
     public Post getPost(@PathVariable Integer id){
@@ -36,7 +47,13 @@ public class PostController {
 
     @RequestMapping(method = RequestMethod.POST, value="/posts/create")
     public String addPost(@RequestBody Post post){
-        System.out.println(post.getTitle());//temp
+        User user = userService.getCurrentLoggedINUser();
+        post.setUser(user);
+        if(post.getCategory()!=null){
+            Category javaBlogCategory= new Category();
+            javaBlogCategory.setCategory(post.getCategory());
+            post.getCategories().add(javaBlogCategory);
+        }
         post.setDate(new Date());
         postService.addPost(post);
         String response ="{\"success\":true,\"message\":\"Post has been added successfully\"}";
