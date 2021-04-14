@@ -1,11 +1,19 @@
 package com.upgrad.blog.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name="categories")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Category {
 
     @Id
@@ -17,6 +25,8 @@ public class Category {
     private String category;
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JsonIgnoreProperties(value = "categories", allowSetters = true)
     private List<Post> posts = new ArrayList<Post>();
 
     public Integer getId() {

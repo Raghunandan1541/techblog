@@ -1,11 +1,16 @@
 package com.upgrad.blog.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -13,9 +18,12 @@ public class Post {
     private String title;
     private String body;
     private Date date;
+    @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
+    @JsonIgnoreProperties(allowSetters = true)
     private User user;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(allowSetters = true)
     private List<Category> categories= new ArrayList<Category>();
 
     @Transient

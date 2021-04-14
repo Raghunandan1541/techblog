@@ -3,6 +3,7 @@ package com.upgrad.blog.controller;
 import com.upgrad.blog.model.Category;
 import com.upgrad.blog.model.Post;
 import com.upgrad.blog.model.User;
+import com.upgrad.blog.service.CategoryService;
 import com.upgrad.blog.service.PostService;
 import com.upgrad.blog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class PostController {
     private PostService postService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private CategoryService categoryService;
 //userService.getCurrentLoggedINUser()
     /*
     /posts      - get
@@ -40,26 +43,32 @@ public class PostController {
         List<Post> posts= user.getPost();
         return posts;
     }
-    @RequestMapping("/getpostbyid/{id}")
+    @RequestMapping("/posts/{id}")
     public Post getPost(@PathVariable Integer id){
         return this.postService.getPost(id);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value="/posts/create")
+    @RequestMapping(method = RequestMethod.POST, value="/posts")
     public String addPost(@RequestBody Post post){
         User user = userService.getCurrentLoggedINUser();
         post.setUser(user);
         if(post.getCategory()!=null){
-            Category javaBlogCategory= new Category();
-            javaBlogCategory.setCategory(post.getCategory());
-            post.getCategories().add(javaBlogCategory);
+            Category category=categoryService.getCategoryByName(post.getCategory());
+            if(category!=null){
+                post.getCategories().add(category);
+            }else{
+                category= new Category();
+                category.setCategory(post.getCategory());
+                post.getCategories().add(category);
+            }
+
         }
         post.setDate(new Date());
         postService.addPost(post);
         String response ="{\"success\":true,\"message\":\"Post has been added successfully\"}";
         return response;
     }
-    @DeleteMapping("/posts/delete/{id}")
+    @DeleteMapping("/posts/{id}")
     public String deletePosts(@PathVariable Integer id){
         this.postService.deletePost(id);
         String response="{\"success\":true,\"message\":\"Post has been deleted successfully\"}";
